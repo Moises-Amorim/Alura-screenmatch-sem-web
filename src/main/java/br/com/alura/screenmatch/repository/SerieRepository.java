@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch.repository;
 
+import br.com.alura.screenmatch.dto.EpisodioDTO;
 import br.com.alura.screenmatch.model.Categoria;
 import br.com.alura.screenmatch.model.Episodio;
 import br.com.alura.screenmatch.model.Serie;
@@ -21,7 +22,6 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
     @Query("select s from Serie s WHERE s.totalTemporadas <= :totalTemporadas AND s.avaliacao >= :avaliacao")
     List<Serie> seriesPorTemporadaEAvaliacao(int totalTemporadas, double avaliacao);
 
-    //Código omitido
 
     @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE e.titulo ILIKE %:trechoEpisodio%")
     List<Episodio> episodiosPorTrecho(String trechoEpisodio);
@@ -32,7 +32,12 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
     @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s = :serie AND YEAR(e.dataLancamento) >= :anoLancamento")
     List<Episodio> episodiosPorSerieEAno(Serie serie, Object anoLancamento);
 
+    @Query("SELECT s FROM Serie s " +
+            "JOIN s.episodios e " +
+            "GROUP BY s " +
+            "ORDER BY MAX(e.dataLancamento) DESC LIMIT 5")
+    List<Serie> encontrarEpisodiosMaisRecentes();
 
-//Código omitido
-
+    @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s.id = :id AND e.temporada = :numero")
+    List<Episodio> obterEpisodiosPorNumero(Long id, Long numero);
 }
